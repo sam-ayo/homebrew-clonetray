@@ -1,9 +1,9 @@
 class Clonetray < Formula
   desc "Manages the clonetray background service"
-  homepage "https://github.com/sam-ayo/automate-repo-cloning"
-  url "https://github.com/sam-ayo/automate-repo-cloning/archive/refs/tags/v0.1.0.tar.gz"
+  homepage "https://github.com/sam-ayo/automate-repo-cloning" # Optional: Replace with your repo URL
+  url "https://github.com/sam-ayo/automate-repo-cloning/archive/refs/tags/v0.1.0.tar.gz" # Placeholder for local testing
   version "0.1.0" 
-  sha256 "27359705daaf4700996b05c5f780ca3edbb5dee6a305eeee5f59e7c48479e665"
+  sha256 "27359705daaf4700996b05c5f780ca3edbb5dee6a305eeee5f59e7c48479e665" # Add SHA256 checksum if distributing a tarball
 
   depends_on "python@3.11" 
 
@@ -22,51 +22,17 @@ class Clonetray < Formula
       s.gsub!(/LABEL=\".*\"/, "LABEL=\"#{plist_name}\"")
     end
 
-    (prefix/"#{plist_name}.plist").write plist
+    # (prefix/"#{plist_name}.plist").write plist # Remove this line
   end
 
-  def plist_name
-    "com.user.clonetray"
-  end
-
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-      <dict>
-          <key>Label</key>
-          <string>#{plist_name}</string>
-
-          <key>ProgramArguments</key>
-          <array>
-              <string>#{Formula["python@3.11"].opt_bin}/python3</string>
-              <string>#{opt_libexec}/tray_clone.py</string>
-          </array>
-
-          <key>RunAtLoad</key>
-          <true/>
-
-          <key>KeepAlive</key>
-          <true/>
-
-          <key>StandardOutPath</key>
-          <string>#{var}/log/clonetray.stdout.log</string>
-
-          <key>StandardErrorPath</key>
-          <string>#{var}/log/clonetray.stderr.log</string>
-
-          <key>WorkingDirectory</key>
-          <string>#{opt_libexec}</string>
-
-          <key>EnvironmentVariables</key>
-          <dict>
-              <key>PATH</key>
-              <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:#{Formula["python@3.11"].opt_bin}</string>
-          </dict>
-      </dict>
-      </plist>
-    EOS
+  service do
+    run [Formula["python@3.11"].opt_bin/"python3", opt_libexec/"tray_clone.py"]
+    keep_alive true
+    run_at_load true
+    working_dir opt_libexec
+    log_path var/"log/clonetray.log"
+    error_log_path var/"log/clonetray.log"
+    environment_variables PATH: std_service_path_env(Formula["python@3.11"].opt_bin)
   end
 
   test do
