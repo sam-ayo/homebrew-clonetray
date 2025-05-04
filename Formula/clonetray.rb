@@ -48,10 +48,16 @@ class Clonetray < Formula
       s.gsub!(/LABEL=\".*\"/, "LABEL=\"#{plist_name}\"")
     end
 
-    # Write the plist file to the standard location
-    (prefix/"#{plist_name}.plist").write plist
-    # Note: Homebrew automatically symlinks this to ~/Library/LaunchAgents during installation
-    # if it's placed in the top-level prefix directory.
+    # Generate the plist content
+    plist_content = plist
+    # Define the target plist path directly in the user's LaunchAgents directory
+    plist_path = File.expand_path("~/Library/LaunchAgents/#{plist_name}.plist")
+    # Create the directory if it doesn't exist
+    FileUtils.mkdir_p(File.dirname(plist_path))
+    # Write the plist file directly to the target location
+    File.write(plist_path, plist_content)
+
+    # Note: We are now manually placing the plist, bypassing Homebrew's symlink mechanism.
   end
 
   def plist_name
