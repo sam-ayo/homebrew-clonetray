@@ -48,18 +48,14 @@ class Clonetray < Formula
       s.gsub!(/LABEL=\".*\"/, "LABEL=\"#{plist_name}\"")
     end
 
-    # Generate the plist content
-    plist_content = plist
+    # Generate the plist content using the plist method
+    plist_content = plist 
     # Define the target plist filename
     plist_filename = "#{plist_name}.plist"
     # Write the plist file to a temporary location within the build directory
     (buildpath/plist_filename).write plist_content
-    # Use prefix.install to copy the plist file to the formula's prefix 
-    # and trigger Homebrew's automatic symlinking to ~/Library/LaunchAgents
+    # Use prefix.install to install the plist (Homebrew should handle symlinking)
     prefix.install plist_filename
-    
-    # Note: Homebrew automatically symlinks plist files installed via prefix.install
-    # to ~/Library/LaunchAgents during installation.
   end
 
   def plist_name
@@ -75,34 +71,29 @@ class Clonetray < Formula
       <dict>
           <key>Label</key>
           <string>#{plist_name}</string>
-
           <key>ProgramArguments</key>
           <array>
               <string>#{libexec}/bin/python</string>
               <string>#{libexec}/tray_clone.py</string>
           </array>
-
           <key>RunAtLoad</key>
           <true/>
-
           <key>KeepAlive</key>
           <true/>
-
           <key>StandardOutPath</key>
           <string>#{var}/log/clonetray.stdout.log</string>
-
           <key>StandardErrorPath</key>
           <string>#{var}/log/clonetray.stderr.log</string>
-
           <key>WorkingDirectory</key>
           <string>#{libexec}</string>
-
-          # Remove EnvironmentVariables PATH modification if using venv's python
-          # <key>EnvironmentVariables</key>
-          # <dict>
-          #     <key>PATH</key>
-          #     <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:#{Formula["python@3.11"].opt_bin}</string>
-          # </dict>
+          <!-- Remove EnvironmentVariables PATH modification if using venv's python -->
+          <!--
+          <key>EnvironmentVariables</key>
+          <dict>
+              <key>PATH</key>
+              <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:#{Formula["python@3.11"].opt_bin}</string>
+          </dict>
+          -->
       </dict>
       </plist>
     EOS
