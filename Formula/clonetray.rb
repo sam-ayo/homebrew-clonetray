@@ -67,6 +67,11 @@ class Clonetray < Formula
     EOS
   end
 
+  service do
+    # This block tells Homebrew this formula manages a service.
+    # By default, it uses the #plist method if defined.
+  end
+
   test do
     assert_predicate bin/"clonetrayctl", :exist?
     assert_predicate bin/"clonetrayctl", :executable?
