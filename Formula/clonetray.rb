@@ -13,14 +13,19 @@ class Clonetray < Formula
     bin.install "launchd.sh" => "clonetrayctl"
 
     inreplace bin/"clonetrayctl" do |s|
-      s.gsub!(/^create_plist\(\) \{.*?^\}/m, "")
-      s.gsub!(/^# Check if plist exists.*create_plist/m, "")
+      s.gsub!(/^create_plist\(\).*?^\}/m, "")
+      s.gsub!(/^# Check if plist exists.*?create_plist/m, "")
       s.gsub!(/^# Verify plist integrity.*?^fi$/m, "")
 
       s.gsub!(/PLIST_PATH=.*/, "PLIST_PATH=\"$HOME/Library/LaunchAgents/#{plist_name}.plist\"")
       s.gsub!(/PLIST_LABEL=.*/, "PLIST_LABEL=\"#{plist_name}\"")
       s.gsub!(/LABEL=\".*\"/, "LABEL=\"#{plist_name}\"")
     end
+
+    # Write the plist file to the standard location
+    (prefix/"#{plist_name}.plist").write plist
+    # Note: Homebrew automatically symlinks this to ~/Library/LaunchAgents during installation
+    # if it's placed in the top-level prefix directory.
   end
 
   def plist_name
@@ -38,7 +43,7 @@ class Clonetray < Formula
 
           <key>ProgramArguments</key>
           <array>
-              <string>#{Formula["python@3.11"].opt_bin}/python3</string>
+              <string>#{Formula["python@3.11"].opt_bin}/python3.11</string>
               <string>#{opt_libexec}/tray_clone.py</string>
           </array>
 
@@ -68,8 +73,12 @@ class Clonetray < Formula
   end
 
   service do
+    keep_alive true
     # This block tells Homebrew this formula manages a service.
     # By default, it uses the #plist method if defined.
+    # Explicitly specifying plist content
+    # plist_options manual: plist_name
+    # plist data { self.plist } # This doesn't seem right, let's revert or remove
   end
 
   test do
