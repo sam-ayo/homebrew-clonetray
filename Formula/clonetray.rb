@@ -37,14 +37,14 @@ class Clonetray < Formula
     bin.install "launchd.sh" => "clonetrayctl"
     inreplace bin/"clonetrayctl" do |s|
       # Remove plist creation/verification logic from the shell script
-      s.gsub!(/^create_plist\\(\\).*?^\\}/m, "")
+      s.gsub!(/^create_plist\(\).*?^\}/m, "")
       s.gsub!(/^# Check if plist exists.*?create_plist/m, "")
       s.gsub!(/^# Verify plist integrity.*?^fi$/m, "")
 
       # Update variables in the shell script to use the correct plist path and label
-      s.gsub!(/PLIST_PATH=.*/, "PLIST_PATH=\\"$HOME/Library/LaunchAgents/#{plist_name}.plist\\"")
-      s.gsub!(/PLIST_LABEL=.*/, "PLIST_LABEL=\\"#{plist_name}\\"")
-      s.gsub!(/LABEL=\\".*\\"/, "LABEL=\\"#{plist_name}\\"")
+      s.gsub!(/PLIST_PATH=.*/, "PLIST_PATH=\"$HOME/Library/LaunchAgents/#{plist_name}.plist\"")
+      s.gsub!(/PLIST_LABEL=.*/, "PLIST_LABEL=\"#{plist_name}\"")
+      s.gsub!(/LABEL=\".*\"/, "LABEL=\"#{plist_name}\"")
     end
 
     # Write the plist file to the standard location
