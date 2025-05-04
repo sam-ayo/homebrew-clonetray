@@ -16,7 +16,7 @@ class Clonetray < Formula
   resource "rumps" do
     # Assuming URL based on GitPython, SHA256 from Socket.dev pattern
     url "https://files.pythonhosted.org/packages/source/r/rumps/rumps-0.4.0.tar.gz"
-    sha256 "186f764079168558a55f002518e450554624c7cc86544759c41516630f98e94e" # Needs verification
+    sha256 "17fb33c21b54b1e25db0d71d1d793dc19dc3c0b7d8c79dc6d833d0cffc8b1596" # Needs verification
   end
 
   def install
