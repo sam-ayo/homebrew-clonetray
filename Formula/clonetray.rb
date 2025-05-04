@@ -30,7 +30,6 @@ class Clonetray < Formula
 
     # Install the script into the virtual environment's site-packages
     # (or keep it in libexec if preferred, adjust plist accordingly)
-    venv.pip_install "--no-deps", "."
 
     # If no setup.py, copy script manually into libexec (adjust path if needed)
     libexec.install "tray_clone.py" unless File.exist?("setup.py")
