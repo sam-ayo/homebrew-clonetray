@@ -1,4 +1,6 @@
 class Clonetray < Formula
+  include Language::Python::Virtualenv
+
   desc "Manages the clonetray background service"
   homepage "https://github.com/sam-ayo/automate-repo-cloning" # Optional: Replace with your repo URL
   url "https://github.com/sam-ayo/automate-repo-cloning/archive/refs/tags/v0.1.0.tar.gz" # Placeholder for local testing
