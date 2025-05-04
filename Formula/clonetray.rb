@@ -50,14 +50,16 @@ class Clonetray < Formula
 
     # Generate the plist content
     plist_content = plist
-    # Define the target plist path directly in the user's LaunchAgents directory
-    plist_path = File.expand_path("~/Library/LaunchAgents/#{plist_name}.plist")
-    # Create the directory if it doesn't exist
-    FileUtils.mkdir_p(File.dirname(plist_path))
-    # Write the plist file directly to the target location
-    File.write(plist_path, plist_content)
-
-    # Note: We are now manually placing the plist, bypassing Homebrew's symlink mechanism.
+    # Define the target plist filename
+    plist_filename = "#{plist_name}.plist"
+    # Write the plist file to a temporary location within the build directory
+    (buildpath/plist_filename).write plist_content
+    # Use prefix.install to copy the plist file to the formula's prefix 
+    # and trigger Homebrew's automatic symlinking to ~/Library/LaunchAgents
+    prefix.install plist_filename
+    
+    # Note: Homebrew automatically symlinks plist files installed via prefix.install
+    # to ~/Library/LaunchAgents during installation.
   end
 
   def plist_name
@@ -107,13 +109,8 @@ class Clonetray < Formula
   end
 
   service do
-    # Remove the explicit run command; brew services will use the plist method by default
-    keep_alive true
-    # This block tells Homebrew this formula manages a service.
-    # By default, it uses the #plist method if defined.
-    # Explicitly specifying plist content
-    # plist_options manual: plist_name
-    # plist data { self.plist } # This doesn't seem right, let's revert or remove
+    # KeepAlive is set in the plist, so manage it there.
+    # Let brew services use the plist defined by the #plist method.
   end
 
   test do
